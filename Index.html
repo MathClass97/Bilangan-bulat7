@@ -1,0 +1,453 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kuis Operasi Bilangan Rasional</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Tata letak: satu lembar soal seperti buklet ujian. Panel stimulus berwarna kertas di atas, panel soal putih di bawahnya, bilah kemajuan menempel di atas. */
+:root{
+  --bg:#EDF1F0; --surface:#FFFFFF; --ink:#12262B; --ink-2:#4A5F64; --line:#CBD7D7;
+  --accent:#B94E17; --sea:#0E5A6B; --sea-soft:#DCEDEF;
+  --good:#1B7448; --good-soft:#DDF1E5; --bad:#B3261E; --bad-soft:#FADFDC;
+  --stim:#FAF5EA; --stim-line:#E2D3B2;
+  --font-display:"Space Grotesk",system-ui,sans-serif; --font-body:"Inter",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1A1D; --surface:#14272B; --ink:#E6F0EF; --ink-2:#9DB4B6; --line:#2A4348;
+    --accent:#F08A4B; --sea:#6CC3D1; --sea-soft:#12383F;
+    --good:#5CCB8E; --good-soft:#11331F; --bad:#FF8A80; --bad-soft:#3A1715;
+    --stim:#1E2A26; --stim-line:#3B4A3F; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1A1D; --surface:#14272B; --ink:#E6F0EF; --ink-2:#9DB4B6; --line:#2A4348;
+  --accent:#F08A4B; --sea:#6CC3D1; --sea-soft:#12383F;
+  --good:#5CCB8E; --good-soft:#11331F; --bad:#FF8A80; --bad-soft:#3A1715;
+  --stim:#1E2A26; --stim-line:#3B4A3F; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--font-body);padding-block:0 56px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:10}
+.wrap{max-width:780px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:10px 4px}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
+.name{font:600 .95rem var(--font-display);letter-spacing:.01em}
+.meta{font-size:.82rem;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pg{display:flex;gap:6px}
+.pg button{flex:1;min-width:0;height:26px;padding:0;border:0;background:none;cursor:pointer;display:grid;align-items:center}
+.pg button i{display:block;height:6px;border-radius:3px;background:var(--line)}
+.pg button.done i{background:var(--sea)}
+.pg button.cur i{background:var(--accent)}
+.pg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+main{padding-block:22px 0;display:flex;flex-direction:column;gap:18px}
+.unit{display:flex;flex-direction:column;gap:18px}
+.eyebrow{margin:0;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+h1{margin:4px 0 8px;font:700 1.7rem/1.15 var(--font-display);text-wrap:balance}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.78rem;padding:3px 10px;border:1px solid var(--line);border-radius:99px;color:var(--ink-2);background:var(--surface)}
+.stimulus{background:var(--stim);border:1px solid var(--stim-line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.stim-label{margin:0;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.stimulus p{margin:0;max-width:64ch}
+.scroll{overflow-x:auto}
+.data{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;background:var(--surface)}
+.data th,.data td{border:1px solid var(--stim-line);padding:7px 10px;text-align:left;font-size:.95rem}
+.data th{background:var(--stim);font-weight:600;font-size:.82rem}
+.data td.r,.data th.r{text-align:right}
+.split{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.split p{flex:1 1 260px}
+.gauge{width:150px;max-width:100%;height:auto;flex:none}
+.g-water{fill:var(--sea-soft)}
+.g-tick,.g-axis{stroke:var(--ink-2);stroke-width:1.2}
+.g-surface{stroke:var(--sea);stroke-width:2}
+.g-text{font:11px var(--font-body);fill:var(--ink-2)}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 .12em;font-size:.9em}
+.frac .n{padding:0 .2em;border-bottom:1.5px solid currentColor}
+.frac .d{padding:0 .2em}
+.mixed{display:inline-flex;align-items:center;gap:.05em}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;margin:0;min-width:0}
+.q-head{display:flex;justify-content:space-between;gap:4px 8px;flex-wrap:wrap;align-items:baseline}
+.q-no{font:700 .95rem var(--font-display)}
+.q-proc{font-size:.78rem;color:var(--ink-2)}
+.q-text{margin:0;font-size:1.05rem}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:auto auto 1fr;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;min-width:0;font-variant-numeric:tabular-nums}
+.opt input{margin:0;accent-color:var(--sea);width:18px;height:18px}
+.opt .k{font:600 .85rem var(--font-display);color:var(--ink-2);width:1.2em}
+.opt:has(input:checked){border-color:var(--sea);background:var(--sea-soft)}
+.opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opt.right,.opt.right:has(input:checked){border-color:var(--good);background:var(--good-soft)}
+.opt.wrong,.opt.wrong:has(input:checked){border-color:var(--bad);background:var(--bad-soft)}
+.q.locked .opt,.q.locked .seg label,.q.locked .sign{cursor:default}
+.tf{display:grid;gap:8px}
+.tf-row{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px}
+@media (max-width:520px){.tf-row{grid-template-columns:1fr}}
+.tf-row p{margin:0}
+.seg{display:flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;justify-self:start}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0;inset:0;margin:0}
+.seg span{display:block;padding:7px 16px;font-size:.9rem;font-weight:600}
+.seg label+label span{border-left:1.5px solid var(--line)}
+.seg input:checked+span{background:var(--sea);color:var(--surface)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:-3px}
+.tf-row.right,.mrow.right{border-color:var(--good);background:var(--good-soft)}
+.tf-row.wrong,.mrow.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.note{margin:0;font-size:.9rem;color:var(--ink-2);grid-column:1/-1}
+.numrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.num{font:600 1.15rem var(--font-body);width:min(100%,11rem);padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
+.num:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--sea)}
+.num.right{border-color:var(--good);background:var(--good-soft)}
+.num.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.sign{width:42px;height:44px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:600 1.2rem var(--font-body);cursor:pointer}
+.sign:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.suffix{color:var(--ink-2)}
+.hint{margin:0;font-size:.85rem;color:var(--ink-2)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border:1px dashed var(--ink-2);border-radius:8px;background:var(--stim);font-variant-numeric:tabular-nums}
+.chip b{font:700 .85rem var(--font-display);color:var(--accent)}
+.mrows{display:grid;gap:8px}
+.mrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px}
+.mrow .expr{flex:1 1 220px;min-width:0;font-variant-numeric:tabular-nums}
+.mrow .note{flex:1 0 100%}
+select{font:500 .95rem var(--font-body);padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.fb{border-radius:8px;padding:12px 14px;font-size:.95rem}
+.fb.ok{background:var(--good-soft);border:1px solid var(--good)}
+.fb.no{background:var(--bad-soft);border:1px solid var(--bad)}
+.fb-h{margin:0 0 4px;font-weight:700}
+.fb.ok .fb-h{color:var(--good)}
+.fb.no .fb-h{color:var(--bad)}
+.fb-b{margin:0}
+.actions,.nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nav{justify-content:space-between}
+.btn{font:600 .95rem var(--font-body);padding:10px 18px;border-radius:8px;border:1.5px solid var(--sea);background:var(--surface);color:var(--sea);cursor:pointer}
+.btn.primary{background:var(--sea);color:var(--surface)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.warn{margin:0;color:var(--bad);font-size:.9rem}
+.score{display:flex;gap:6px 20px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.big{font:700 3.2rem/1 var(--font-display);font-variant-numeric:tabular-nums}
+.big small{font-size:1.2rem;color:var(--ink-2);font-weight:500}
+.band{font:600 1.2rem var(--font-display);margin:0}
+.score p{margin:0}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rlist li{display:grid;grid-template-columns:2ch 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-variant-numeric:tabular-nums}
+.rlist small{color:var(--ink-2)}
+.st{font-size:.8rem;font-weight:700;padding:2px 10px;border-radius:99px;white-space:nowrap}
+.st.ok{background:var(--good-soft);color:var(--good)}
+.st.no{background:var(--bad-soft);color:var(--bad)}
+.st.na{background:var(--stim);color:var(--ink-2)}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row"><span class="name">Kuis Bilangan Rasional · Kelas VII</span><span class="meta" id="meta"></span></div>
+    <div class="pg" id="pg"></div>
+  </div>
+</header>
+<main id="app" class="wrap"></main>
+
+<script>
+(function(){
+var MIN='−';
+function fr(n,d){return '<span class="frac"><span class="n">'+n+'</span><span class="d">'+d+'</span></span>';}
+function mx(w,n,d){return '<span class="mixed">'+w+fr(n,d)+'</span>';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+function gauge(){
+  var t='';
+  for(var m=0;m<=10;m++){
+    var y=30+22*m;
+    t+='<line x1="58" x2="'+(m%2===0?72:66)+'" y1="'+y+'" y2="'+y+'" class="g-tick"/>';
+    if(m%2===0){t+='<text x="52" y="'+(y+4)+'" text-anchor="end" class="g-text">'+(m===0?'0':MIN+m)+'</text>';}
+  }
+  return '<svg viewBox="0 0 150 270" role="img" aria-label="Skala kedalaman dari permukaan laut 0 meter sampai minus 10 meter" class="gauge">'+
+    '<rect x="58" y="30" width="60" height="220" class="g-water"/>'+
+    '<line x1="40" x2="130" y1="30" y2="30" class="g-surface"/>'+
+    '<line x1="58" x2="58" y1="30" y2="250" class="g-axis"/>'+t+
+    '<text x="130" y="24" text-anchor="end" class="g-text">Permukaan laut</text>'+
+    '<text x="124" y="264" text-anchor="end" class="g-text">kedalaman (m)</text></svg>';
+}
+
+var NUMHINT='Boleh ditulis desimal (contoh: '+MIN+'0,5) atau pecahan (contoh: '+MIN+'1/2). Gunakan tombol '+MIN+' untuk tanda minus.';
+
+var units=[
+{title:'Lemari Pendingin Ikan',ctx:'Pekerjaan',
+ stim:'<p>Sebuah koperasi nelayan menyimpan ikan hasil tangkapan di lemari pendingin. Pada pukul 06.00, suhu di dalam lemari adalah '+MIN+'3,5 °C. Setelah pintu ditutup, mesin menurunkan suhu sebesar 1,25 °C setiap jam.</p>'+
+ '<div class="scroll"><table class="data"><thead><tr><th>Keterangan</th><th class="r">Nilai</th></tr></thead><tbody>'+
+ '<tr><td>Suhu dalam lemari pukul 06.00</td><td class="r">'+MIN+'3,5 °C</td></tr>'+
+ '<tr><td>Penurunan suhu tiap jam</td><td class="r">1,25 °C</td></tr>'+
+ '<tr><td>Suhu ruangan di luar lemari</td><td class="r">28,5 °C</td></tr></tbody></table></div>',
+ qs:[
+ {id:'q1',type:'num',topic:'Perkalian dan pengurangan desimal',proc:'Menerapkan',
+  prompt:'Berapa suhu di dalam lemari pada pukul 09.00?',unit:'°C',accept:[-7.25],shown:MIN+'7,25 °C',
+  explain:'Penurunan selama 3 jam: 3 × 1,25 = 3,75 °C. Suhu pukul 09.00: '+MIN+'3,5 '+MIN+' 3,75 = '+MIN+'7,25 °C.'},
+ {id:'q2',type:'mc',topic:'Mengurangi bilangan negatif',proc:'Merumuskan',
+  prompt:'Berapa selisih suhu antara ruangan di luar lemari dan di dalam lemari pada pukul 09.00?',
+  options:['21,25 °C',MIN+'21,25 °C','36,75 °C','35,75 °C'],answer:3,
+  explain:'Selisih = suhu luar '+MIN+' suhu dalam = 28,5 '+MIN+' ('+MIN+'7,25) = 28,5 + 7,25 = 35,75 °C. Mengurangi bilangan negatif sama dengan menambah lawannya. Pilihan 21,25 °C muncul bila tanda minus diabaikan.'}
+ ]},
+{title:'Tepung untuk Kue',ctx:'Pribadi',
+ stim:'<p>Bu Ani membuat kue untuk acara sekolah. Satu adonan memerlukan '+fr(3,4)+' kg tepung terigu. Bu Ani memiliki persediaan 5 kg tepung terigu.</p>'+
+ '<div class="scroll"><table class="data"><thead><tr><th>Kartu resep</th><th class="r">Jumlah</th></tr></thead><tbody>'+
+ '<tr><td>Tepung untuk 1 adonan</td><td class="r">'+fr(3,4)+' kg</td></tr>'+
+ '<tr><td>Persediaan tepung</td><td class="r">5 kg</td></tr></tbody></table></div>',
+ qs:[
+ {id:'q3',type:'mc',topic:'Perkalian pecahan campuran',proc:'Merumuskan',
+  prompt:'Bu Ani ingin membuat '+mx(2,1,2)+' adonan. Berapa kg tepung yang diperlukan?',
+  options:[mx(3,1,4)+' kg',mx(1,7,8)+' kg',mx(1,1,8)+' kg',mx(2,1,4)+' kg'],answer:1,
+  explain:mx(2,1,2)+' = '+fr(5,2)+'. Tepung = '+fr(3,4)+' × '+fr(5,2)+' = '+fr(15,8)+' = '+mx(1,7,8)+' kg. Pilihan '+mx(3,1,4)+' berasal dari menjumlahkan, padahal soal ini perkalian.'},
+ {id:'q4',type:'tf',topic:'Perkalian dan pembagian pecahan',proc:'Menafsirkan',
+  prompt:'Tentukan apakah setiap pernyataan berikut Benar atau Salah.',
+  items:[
+   {text:'Tepung 3 kg cukup untuk membuat tepat 4 adonan.',answer:true,note:'4 × '+fr(3,4)+' = 3 kg. Pernyataan ini benar.'},
+   {text:'Setelah membuat 6 adonan, tepung yang tersisa dari 5 kg adalah '+fr(1,4)+' kg.',answer:false,note:'6 × '+fr(3,4)+' = 4,5 kg terpakai. Sisa = 5 '+MIN+' 4,5 = 0,5 kg = '+fr(1,2)+' kg. Pernyataan ini salah.'},
+   {text:'Dari 1 kg tepung dapat dibuat '+mx(1,1,3)+' adonan.',answer:true,note:'1 ÷ '+fr(3,4)+' = 1 × '+fr(4,3)+' = '+mx(1,1,3)+' adonan. Pernyataan ini benar.'}
+  ],
+  explain:'Baca catatan di bawah tiap pernyataan. Soal ini benar penuh hanya bila ketiga jawaban tepat.'}
+ ]},
+{title:'Kas Koperasi Sekolah',ctx:'Masyarakat',
+ stim:'<p>Koperasi sekolah mencatat uang masuk dan uang keluar selama empat hari. Semua jumlah ditulis dalam ribuan rupiah. Tanda minus berarti uang keluar. Saldo awal pada hari Senin pagi adalah 200 (Rp200.000).</p>'+
+ '<div class="scroll"><table class="data"><thead><tr><th>Hari</th><th class="r">Transaksi (ribu rupiah)</th></tr></thead><tbody>'+
+ '<tr><td>Senin</td><td class="r">+125,5</td></tr>'+
+ '<tr><td>Selasa</td><td class="r">'+MIN+'48,75</td></tr>'+
+ '<tr><td>Rabu</td><td class="r">'+MIN+'32,25</td></tr>'+
+ '<tr><td>Kamis</td><td class="r">+60</td></tr></tbody></table></div>',
+ qs:[
+ {id:'q5',type:'num',topic:'Penjumlahan dan pengurangan desimal bertanda',proc:'Menerapkan',
+  prompt:'Berapa saldo koperasi setelah transaksi hari Kamis? Tulis dalam ribuan rupiah.',unit:'ribu rupiah',accept:[304.5,304500],shown:'304,5 ribu rupiah (Rp304.500)',
+  explain:'200 + 125,5 '+MIN+' 48,75 '+MIN+' 32,25 + 60 = 304,5. Jadi saldonya 304,5 ribu rupiah, yaitu Rp304.500.'},
+ {id:'q6',type:'mc',topic:'Membandingkan bilangan desimal',proc:'Menafsirkan',
+  prompt:'Setelah transaksi pada hari apa saldo koperasi paling rendah?',
+  options:['Senin','Selasa','Rabu','Kamis'],answer:2,
+  explain:'Saldo akhir tiap hari: Senin 325,5; Selasa 276,75; Rabu 244,5; Kamis 304,5. Saldo terendah terjadi pada hari Rabu.'}
+ ]},
+{title:'Penyelam di Terumbu Karang',ctx:'Ilmiah',
+ stim:'<div class="split">'+gauge()+'<p>Seorang penyelam memeriksa terumbu karang di perairan Maluku. Permukaan laut dianggap berada pada 0 m dan kedalaman ditulis sebagai bilangan negatif. Penyelam turun '+mx(1,1,2)+' m setiap menit selama 6 menit. Setelah itu ia naik 2,25 m untuk memotret terumbu yang lebih dangkal.</p></div>',
+ qs:[
+ {id:'q7',type:'num',topic:'Operasi gabungan bilangan negatif',proc:'Merumuskan',
+  prompt:'Di posisi berapa penyelam berada setelah naik 2,25 m? Tulis sebagai bilangan terhadap permukaan laut.',unit:'m',accept:[-6.75],shown:MIN+'6,75 m',
+  explain:'Turun: '+mx(1,1,2)+' × 6 = 1,5 × 6 = 9 m, jadi posisinya '+MIN+'9 m. Naik 2,25 m: '+MIN+'9 + 2,25 = '+MIN+'6,75 m, yaitu 6,75 m di bawah permukaan.'},
+ {id:'q8',type:'mc',topic:'Mengurutkan pecahan dan desimal negatif',proc:'Menafsirkan',
+  prompt:'Empat sensor dipasang pada kedalaman berikut. A: '+MIN+'6,75 m. B: '+MIN+mx(7,1,2)+' m. C: '+MIN+fr(9,2)+' m. D: '+MIN+'8,25 m. Manakah urutan sensor dari yang paling dalam ke yang paling dangkal?',
+  options:['C, A, B, D','D, A, B, C','A, B, C, D','D, B, A, C'],answer:3,
+  explain:'Ubah semuanya ke desimal: A = '+MIN+'6,75; B = '+MIN+'7,5; C = '+MIN+'4,5; D = '+MIN+'8,25. Bilangan negatif yang lebih kecil berarti lebih dalam, sehingga urutannya '+MIN+'8,25 &lt; '+MIN+'7,5 &lt; '+MIN+'6,75 &lt; '+MIN+'4,5, yaitu D, B, A, C.'}
+ ]},
+{title:'Minyak Kelapa Pak Salim',ctx:'Pekerjaan',
+ stim:'<p>Pak Salim menjual minyak kelapa buatan sendiri. Ia memiliki '+mx(7,1,2)+' liter minyak dan akan menuangkannya ke dalam botol berukuran '+fr(3,4)+' liter. Setiap botol harus terisi penuh sebelum dijual.</p>',
+ qs:[
+ {id:'q9',type:'num',topic:'Pembagian pecahan campuran',proc:'Merumuskan',
+  prompt:'Berapa botol yang dapat terisi penuh?',unit:'botol',accept:[10],shown:'10 botol',
+  explain:mx(7,1,2)+' ÷ '+fr(3,4)+' = '+fr(15,2)+' × '+fr(4,3)+' = '+fr(60,6)+' = 10 botol. Minyak habis tepat pada botol ke-10, tanpa sisa.'}
+ ]},
+{title:'Kartu Operasi Adit',ctx:'Intramatematika',
+ stim:'<p>Adit membuat kartu soal dan kartu hasil untuk permainan di kelas. Pasangkan setiap operasi dengan kartu hasil yang benar. Ada satu kartu hasil yang tidak terpakai.</p>',
+ qs:[
+ {id:'q10',type:'match',topic:'Operasi campuran bilangan rasional',proc:'Menerapkan',
+  prompt:'Pilih kartu hasil (A sampai E) untuk setiap operasi.',
+  choices:[
+   {k:'A',html:MIN+'3',text:MIN+'3'},
+   {k:'B',html:fr(1,2),text:'1/2'},
+   {k:'C',html:MIN+'2',text:MIN+'2'},
+   {k:'D',html:MIN+fr(13,20),text:MIN+'13/20'},
+   {k:'E',html:'2',text:'2'}
+  ],
+  items:[
+   {html:'('+MIN+fr(3,4)+') × ('+MIN+fr(2,3)+')',answer:'B',note:'Negatif × negatif = positif. '+fr(3,4)+' × '+fr(2,3)+' = '+fr(6,12)+' = '+fr(1,2)+'.'},
+   {html:'('+MIN+fr(5,6)+') ÷ '+fr(5,12),answer:'C',note:'('+MIN+fr(5,6)+') × '+fr(12,5)+' = '+MIN+fr(60,30)+' = '+MIN+'2.'},
+   {html:'0,6 + ('+MIN+mx(1,1,4)+')',answer:'D',note:'0,6 '+MIN+' 1,25 = '+MIN+'0,65 = '+MIN+fr(13,20)+'.'},
+   {html:'('+MIN+'2,4) ÷ 0,8',answer:'A',note:'Negatif ÷ positif = negatif. 2,4 ÷ 0,8 = 3, jadi hasilnya '+MIN+'3.'}
+  ],
+  explain:'Soal ini benar penuh hanya bila keempat pasangan tepat. Kartu E tidak terpakai.'}
+ ]}
+];
+
+var Q=[],QM={};
+units.forEach(function(u){u.qs.forEach(function(q){Q.push(q);QM[q.id]=q;});});
+var state={u:0,ans:{},done:{},results:false};
+var app=document.getElementById('app'),pg=document.getElementById('pg'),meta=document.getElementById('meta');
+
+function toDec(t){
+  if(t===''||t==='-'||!/^-?\d*[.,]?\d*$/.test(t)) return NaN;
+  return parseFloat(t.replace(',','.'));
+}
+function parseNum(s){
+  s=String(s).trim().replace(/[−–—]/g,'-');
+  var m=s.match(/^(-?)\s*(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+  if(m){var den=+m[4];if(!den)return NaN;var v=(+m[2])+(+m[3])/den;return m[1]?-v:v;}
+  s=s.replace(/[^0-9.,\/-]/g,'');
+  if(!s) return NaN;
+  if(s.indexOf('/')>-1){
+    var p=s.split('/');
+    if(p.length!==2) return NaN;
+    var a=toDec(p[0]),b=toDec(p[1]);
+    return (isNaN(a)||isNaN(b)||b===0)?NaN:a/b;
+  }
+  return toDec(s);
+}
+window.__parseNum=parseNum;
+
+function qHTML(q,no){
+  var d=state.done[q.id],locked=!!d,a=state.ans[q.id],body='';
+  if(q.type==='mc'){
+    body='<div class="opts" role="radiogroup" aria-label="Pilihan jawaban">'+q.options.map(function(o,i){
+      var c='opt';
+      if(locked){if(i===q.answer)c+=' right';else if(i===a)c+=' wrong';}
+      return '<label class="'+c+'"><input type="radio" name="'+q.id+'" value="'+i+'" data-q="'+q.id+'"'+(a===i?' checked':'')+(locked?' disabled':'')+'><span class="k">'+'ABCD'.charAt(i)+'</span><span>'+o+'</span></label>';
+    }).join('')+'</div>';
+  }else if(q.type==='tf'){
+    var arr=a||[];
+    body='<div class="tf">'+q.items.map(function(it,i){
+      var v=arr[i],c='tf-row';
+      if(locked)c+=(v===it.answer?' right':' wrong');
+      return '<div class="'+c+'"><p>'+it.text+'</p><div class="seg" role="radiogroup" aria-label="Benar atau Salah">'+
+        '<label><input type="radio" name="'+q.id+'_'+i+'" value="true" data-q="'+q.id+'" data-i="'+i+'"'+(v===true?' checked':'')+(locked?' disabled':'')+'><span>Benar</span></label>'+
+        '<label><input type="radio" name="'+q.id+'_'+i+'" value="false" data-q="'+q.id+'" data-i="'+i+'"'+(v===false?' checked':'')+(locked?' disabled':'')+'><span>Salah</span></label></div>'+
+        (locked?'<p class="note">'+it.note+'</p>':'')+'</div>';
+    }).join('')+'</div>';
+  }else if(q.type==='num'){
+    var c2='num';
+    if(locked)c2+=d.ok?' right':' wrong';
+    body='<div class="numrow"><button type="button" class="sign" data-sign="'+q.id+'"'+(locked?' disabled':'')+' aria-label="Tambah atau hapus tanda minus">'+MIN+'</button>'+
+      '<input class="'+c2+'" id="in_'+q.id+'" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" data-q="'+q.id+'" value="'+esc(a||'')+'"'+(locked?' disabled':'')+' aria-label="Jawaban">'+
+      '<span class="suffix">'+q.unit+'</span></div><p class="hint">'+NUMHINT+'</p>';
+  }else if(q.type==='match'){
+    var arr2=a||[];
+    body='<div class="chips" aria-label="Kartu hasil">'+q.choices.map(function(c){return '<span class="chip"><b>'+c.k+'</b>'+c.html+'</span>';}).join('')+'</div>'+
+      '<div class="mrows">'+q.items.map(function(it,i){
+        var v=arr2[i],c3='mrow';
+        if(locked)c3+=(v===it.answer?' right':' wrong');
+        return '<div class="'+c3+'"><span class="expr">'+it.html+'</span><select data-q="'+q.id+'" data-i="'+i+'" aria-label="Hasil operasi '+(i+1)+'"'+(locked?' disabled':'')+'><option value="">Pilih</option>'+
+          q.choices.map(function(c){return '<option value="'+c.k+'"'+(v===c.k?' selected':'')+'>'+c.k+'. '+c.text+'</option>';}).join('')+'</select>'+
+          (locked?'<p class="note">'+it.note+'</p>':'')+'</div>';
+      }).join('')+'</div>';
+  }
+  var fb='';
+  if(locked){
+    var extra=(q.type==='num'&&!d.ok)?'<p class="fb-b">Jawaban yang benar: <b>'+q.shown+'</b>.</p>':'';
+    fb='<div class="fb '+(d.ok?'ok':'no')+'" role="status" data-fb="'+q.id+'"><p class="fb-h">'+(d.ok?'Tepat.':'Belum tepat.')+'</p>'+extra+'<p class="fb-b">'+q.explain+'</p></div>';
+  }
+  var act=locked?'':'<div class="actions"><button type="button" class="btn primary" data-check="'+q.id+'">Periksa jawaban</button><p class="warn" id="warn_'+q.id+'" role="alert" hidden></p></div>';
+  return '<section class="q'+(locked?' locked':'')+'" aria-labelledby="qt_'+q.id+'">'+
+    '<div class="q-head"><span class="q-no" id="qt_'+q.id+'">Soal '+no+'</span><span class="q-proc">Proses: '+q.proc+'</span></div>'+
+    '<p class="q-text">'+q.prompt+'</p>'+body+fb+act+'</section>';
+}
+
+function renderUnit(){
+  var u=units[state.u],first=Q.indexOf(u.qs[0])+1;
+  var allDone=u.qs.every(function(q){return state.done[q.id];});
+  var last=state.u===units.length-1;
+  app.innerHTML='<div class="unit">'+
+    '<div><p class="eyebrow">Bagian '+(state.u+1)+' dari '+units.length+'</p><h1>'+u.title+'</h1><div class="tags"><span class="tag">Konteks: '+u.ctx+'</span><span class="tag">'+u.qs.length+' soal</span></div></div>'+
+    '<article class="stimulus"><p class="stim-label">Bacalah informasi berikut</p>'+u.stim+'</article>'+
+    u.qs.map(function(q,i){return qHTML(q,first+i);}).join('')+
+    '<nav class="nav" aria-label="Navigasi bagian">'+
+      '<button type="button" class="btn" data-go="prev"'+(state.u===0?' disabled':'')+'>Sebelumnya</button>'+
+      (last?'<button type="button" class="btn primary" data-go="results"'+(allDone?'':' disabled')+'>Lihat hasil</button>'
+           :'<button type="button" class="btn primary" data-go="next"'+(allDone?'':' disabled')+'>Bagian berikutnya</button>')+
+    '</nav></div>';
+}
+
+function renderResults(){
+  var sc=Q.filter(function(q){return state.done[q.id]&&state.done[q.id].ok;}).length;
+  var band=sc>=9?'Sangat baik':sc>=7?'Baik':sc>=5?'Cukup':'Perlu latihan lagi';
+  var msg=sc>=9?'Operasi pada pecahan, desimal, dan bilangan negatif sudah kamu kuasai.':
+          sc>=7?'Sebagian besar konsep sudah tepat. Ulangi soal yang belum tepat dan baca pembahasannya.':
+          sc>=5?'Dasarnya sudah ada. Fokuskan latihan pada soal yang belum tepat di daftar bawah.':
+          'Mulai lagi dari operasi pecahan dan bilangan negatif, lalu coba kuis ini sekali lagi.';
+  var rows=Q.map(function(q,i){
+    var d=state.done[q.id],s=d?(d.ok?['ok','Tepat']:['no','Belum tepat']):['na','Belum dijawab'];
+    return '<li><b>'+(i+1)+'</b><span>'+q.topic+'<br><small>Proses: '+q.proc+'</small></span><span class="st '+s[0]+'">'+s[1]+'</span></li>';
+  }).join('');
+  app.innerHTML='<div class="unit"><div><p class="eyebrow">Hasil kuis</p><h1>Ringkasan jawabanmu</h1></div>'+
+    '<div class="score"><div class="big">'+sc+'<small> / '+Q.length+'</small></div><div><p class="band">'+band+'</p><p>'+msg+'</p></div></div>'+
+    '<ul class="rlist">'+rows+'</ul>'+
+    '<div class="actions"><button type="button" class="btn" data-act="review">Tinjau soal</button><button type="button" class="btn primary" data-act="restart">Ulangi kuis</button></div></div>';
+}
+
+function header(){
+  pg.innerHTML=units.map(function(u,i){
+    var all=u.qs.every(function(q){return state.done[q.id];});
+    var cls=(all?'done ':'')+((!state.results&&i===state.u)?'cur':'');
+    return '<button type="button" data-jump="'+i+'" class="'+cls+'" aria-label="Bagian '+(i+1)+': '+u.title+'"><i></i></button>';
+  }).join('');
+  meta.textContent='Terjawab '+Object.keys(state.done).length+' dari '+Q.length;
+}
+
+function render(keep){
+  var y=window.scrollY;
+  if(state.results)renderResults();else renderUnit();
+  header();
+  window.scrollTo(0,keep?y:0);
+}
+
+function warn(id,t){var el=document.getElementById('warn_'+id);if(el){el.textContent=t;el.hidden=false;}}
+function hideWarn(id){var el=document.getElementById('warn_'+id);if(el)el.hidden=true;}
+
+function check(id){
+  var q=QM[id],a=state.ans[id],ok=false;
+  if(q.type==='mc'){
+    if(a===undefined)return warn(id,'Pilih salah satu jawaban dulu.');
+    ok=a===q.answer;
+  }else if(q.type==='tf'){
+    if(!a||q.items.some(function(_,i){return a[i]===undefined;}))return warn(id,'Tentukan Benar atau Salah untuk setiap pernyataan.');
+    ok=q.items.every(function(it,i){return a[i]===it.answer;});
+  }else if(q.type==='num'){
+    if(!a||!String(a).trim())return warn(id,'Tulis jawabanmu dulu.');
+    var v=parseNum(a);
+    if(isNaN(v))return warn(id,'Jawaban belum terbaca. Gunakan angka, desimal, atau pecahan seperti '+MIN+'1/2.');
+    ok=q.accept.some(function(x){return Math.abs(x-v)<1e-6;});
+  }else if(q.type==='match'){
+    if(!a||q.items.some(function(_,i){return !a[i];}))return warn(id,'Pilih kartu hasil untuk setiap operasi.');
+    ok=q.items.every(function(it,i){return a[i]===it.answer;});
+  }
+  state.done[id]={ok:ok};
+  render(true);
+  var fb=document.querySelector('[data-fb="'+id+'"]');
+  if(fb)fb.scrollIntoView({block:'nearest'});
+}
+
+function sign(id){
+  var inp=document.getElementById('in_'+id);
+  if(!inp)return;
+  var v=inp.value.trim();
+  if(v.charAt(0)===MIN||v.charAt(0)==='-')v=v.slice(1);else v=MIN+v;
+  inp.value=v;state.ans[id]=v;hideWarn(id);inp.focus();
+}
+
+document.addEventListener('click',function(e){
+  var t=e.target.closest('button');
+  if(!t)return;
+  var ds=t.dataset;
+  if(ds.check){check(ds.check);return;}
+  if(ds.sign){sign(ds.sign);return;}
+  if(ds.jump!==undefined){state.results=false;state.u=+ds.jump;render(false);return;}
+  if(ds.go){
+    if(ds.go==='prev')state.u=Math.max(0,state.u-1);
+    else if(ds.go==='next')state.u=Math.min(units.length-1,state.u+1);
+    else if(ds.go==='results')state.results=true;
+    render(false);return;
+  }
+  if(ds.act==='restart'){state={u:0,ans:{},done:{},results:false};render(false);return;}
+  if(ds.act==='review'){state.results=false;state.u=0;render(false);}
+});
+
+app.addEventListener('change',function(e){
+  var t=e.target,id=t.dataset.q;
+  if(!id)return;
+  var q=QM[id];
+  if(q.type==='mc'){state.ans[id]=+t.value;}
+  else if(q.type==='tf'){var a=state.ans[id]||(state.ans[id]=[]);a[+t.dataset.i]=(t.value==='true');}
+  else if(q.type==='match'){var b=state.ans[id]||(state.ans[id]=[]);b[+t.dataset.i]=t.value;}
+  hideWarn(id);
+});
+app.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.classList&&t.classList.contains('num')){state.ans[t.dataset.q]=t.value;hideWarn(t.dataset.q);}
+});
+
+render(false);
+})();
+</script>
+
+</body></html>
